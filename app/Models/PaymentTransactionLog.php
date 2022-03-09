@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use PHPUnit\Util\Json;
+use Psy\Util\Json;
 
 /**
- * Class PaymentTransactionHistory
+ * Class PaymentTransactionLog
  * @property int id
  * @property int payment_transaction_history_id
  * @property string invoice
@@ -18,8 +18,8 @@ use PHPUnit\Util\Json;
  * @property double amount
  * @property double paid_amount
  * @property string trnx_currency
- * @property json request_payload
- * @property json response_message
+ * @property Json request_payload
+ * @property Json response_message
  * @property int status
  * @property string ipn_uri_secret_token
  * @property Carbon transaction_created_at
@@ -29,7 +29,7 @@ use PHPUnit\Util\Json;
  */
 class PaymentTransactionLog extends BaseModel
 {
-    protected $guarded=BaseModel::COMMON_GUARDED_FIELDS_SIMPLE;
+    protected $guarded = BaseModel::COMMON_GUARDED_FIELDS_SIMPLE;
 
     protected $casts = [
         "request_payload" => 'array',

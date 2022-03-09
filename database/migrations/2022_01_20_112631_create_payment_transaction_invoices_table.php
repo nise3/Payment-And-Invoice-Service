@@ -4,18 +4,17 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePaymentTransactionHistoriesTable extends Migration
+class CreatePaymentTransactionInvoicesTable extends Migration
 {
     /**
      * Run the migrations.
      *
      * @return void
-     */
+     **/
     public function up()
     {
-        Schema::create('payment_transaction_histories', function (Blueprint $table) {
-            $table->increments('id');
-            $table->char('invoice', 36);
+        Schema::create('payment_transaction_invoices', function (Blueprint $table) {
+            $table->char('invoice_id', 36)->primary();
             $table->string('mer_trnx_id', 64)->unique();
             $table->string('trnx_id', 100)->nullable();
             $table->unsignedInteger('payment_purpose_related_id');
