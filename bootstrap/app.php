@@ -69,9 +69,11 @@ $app->configure('queue');
 $app->configure('nise3RabbitMq');
 $app->configure('database');
 $app->configure('ekpay');
+$app->configure('sslcommerz');
 $app->configure('sms');
 $app->configure('elasticSearchLogConfig');
 $app->configure('lumenDefaultLogConfig');
+$app->configure('paymentConfiguration');
 $app->configure('kafka');
 
 /*

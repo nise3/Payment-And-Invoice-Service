@@ -3,6 +3,9 @@
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 use App\Helpers\Classes\CustomRouter;
+use App\Models\PaymentPurpose;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 use Junges\Kafka\Facades\Kafka;
 use Junges\Kafka\Message\Message;
 
@@ -49,13 +52,24 @@ $router->group(['prefix' => 'api/v1', 'as' => 'api.v1'], function () use ($route
     });
 });
 
-$router->get("kafka",function (){
-    $producer = Kafka::publishOn('kafka')
-        ->withConfigOptions(['key' => 'value'])
-        ->withKafkaKey('your-kafka-key')
-        ->withKafkaKey('kafka-key')
-        ->withHeaders(['header-key' => 'header-value']);
-
-   return $producer->send();
+$router->get("/publish", function () {
+   // return Redis::set("name", "piyal");
+//    Redis::publish('payment.' . PaymentPurpose::PAYMENT_PURPOSE_CODE_COURSE_ENROLLMENT, json_encode([
+//        'name' => PaymentPurpose::PAYMENT_PURPOSE_CODE_COURSE_ENROLLMENT
+//    ]));
+//
+//    Redis::publish('payment' . PaymentPurpose::PAYMENT_PURPOSE_CODE_RTO_APPLICATION, json_encode([
+//        'name' => PaymentPurpose::PAYMENT_PURPOSE_CODE_RTO_APPLICATION
+//    ]));
+//
+//    Redis::publish('payment.' . PaymentPurpose::PAYMENT_PURPOSE_CODE_NASCIB_MEMBERSHIP_PAYMENT, json_encode([
+//        'name' => PaymentPurpose::PAYMENT_PURPOSE_CODE_NASCIB_MEMBERSHIP_PAYMENT
+//    ]));
+    Redis::psubscribe(['*'], function ($message, $channel) {
+        return [
+            $message,
+            $channel
+        ];
+    });
 });
 

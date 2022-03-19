@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6d738452af222500a38a73d46a42dfab",
+    "content-hash": "636cfc9a67d87c7f587c73390ee1dd60",
     "packages": [
         {
             "name": "anis072/lumen-queue-rabbitmq",

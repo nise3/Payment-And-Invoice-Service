@@ -14,12 +14,12 @@ class CreatePaymentConfigurationsTable extends Migration
     public function up()
     {
         Schema::create('payment_configurations', function (Blueprint $table) {
-            $table->id();
+            $table->increments("id");
             $table->string('configuration_owner')->comment("INDUSTRY_ASSOCIATION,INDUSTRY,INSTITUTE,RTO");
             $table->unsignedInteger('configuration_owner_id');
             $table->string('payment_gateway_type')->comment("EK_PAY,SSL_COMMERZ");
             $table->json("configuration");
-            $table->unsignedTinyInteger("row_status");
+            $table->unsignedTinyInteger("row_status")->default(1);
             $table->softDeletes();
             $table->timestamps();
         });

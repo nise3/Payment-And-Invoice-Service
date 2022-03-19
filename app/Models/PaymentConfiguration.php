@@ -21,7 +21,7 @@ class PaymentConfiguration extends BaseModel
     ];
 
     /** Payment Gateway Type */
-    public const EK_PAY_LABEL = " EK_PAY";
+    public const EK_PAY_LABEL = "EK_PAY";
     public const SSLCOMMERZ_LABEL = "SSL_COMMERZ";
     public const DBBL_MOBILE_BANKING = "DBBL_MOBILE_BANKING";
     public const BKASH = "BKASH";
@@ -34,4 +34,9 @@ class PaymentConfiguration extends BaseModel
         self::BKASH => "BKash",
         self::PORT_WALLET => "Port Wallet"
     ];
+
+    protected $casts = [
+        "configuration" => "array"
+    ];
+
 }

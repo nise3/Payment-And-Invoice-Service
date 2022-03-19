@@ -15,6 +15,7 @@ class CreateInvoicePessimisticLockingsTable extends Migration
     {
         Schema::create('invoice_pessimistic_lockings', function (Blueprint $table) {
             $table->integer('last_incremental_value');
+            $table->string('purpose');
         });
     }
 
