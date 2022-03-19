@@ -3,6 +3,8 @@
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 use App\Helpers\Classes\CustomRouter;
+use Junges\Kafka\Facades\Kafka;
+use Junges\Kafka\Message\Message;
 
 $customRouter = function (string $as = '') use ($router) {
     $custom = new CustomRouter($router);
@@ -45,5 +47,15 @@ $router->group(['prefix' => 'api/v1', 'as' => 'api.v1'], function () use ($route
         $router->get('payment-by-ek-pay/cancel', ["as" => "payment-by-ek-pay.cancel", "uses" => "CourseEnrollmentPaymentController@ekPayPaymentCancel"]);
         $router->post('payment-by-ek-pay/ipn-handler/{secretToken}', ["as" => "payment.ipn-handler", "uses" => "CourseEnrollmentPaymentController@ekPayPaymentIpnHandler"]);
     });
+});
+
+$router->get("kafka",function (){
+    $producer = Kafka::publishOn('kafka')
+        ->withConfigOptions(['key' => 'value'])
+        ->withKafkaKey('your-kafka-key')
+        ->withKafkaKey('kafka-key')
+        ->withHeaders(['header-key' => 'header-value']);
+
+   return $producer->send();
 });
 

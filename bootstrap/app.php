@@ -1,5 +1,7 @@
 <?php
 
+
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 (new Laravel\Lumen\Bootstrap\LoadEnvironmentVariables(
@@ -70,6 +72,7 @@ $app->configure('ekpay');
 $app->configure('sms');
 $app->configure('elasticSearchLogConfig');
 $app->configure('lumenDefaultLogConfig');
+$app->configure('kafka');
 
 /*
 |--------------------------------------------------------------------------
@@ -116,6 +119,7 @@ $app->register(App\Providers\RabbitMQServiceProvider::class);
 $app->register(VladimirYuldashev\LaravelQueueRabbitMQ\LaravelQueueRabbitMQServiceProvider::class);
 $app->register(Khbd\LaravelSmsBD\SMSServiceProvider::class);
 $app->register(Ixudra\Curl\CurlServiceProvider::class);
+$app->register(Junges\Kafka\Providers\LaravelKafkaServiceProvider::class);
 
 /* $app->register(App\Providers\EventServiceProvider::class); */
 
