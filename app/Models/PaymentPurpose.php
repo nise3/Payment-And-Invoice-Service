@@ -13,10 +13,12 @@ class PaymentPurpose extends BaseModel
     public const PAYMENT_PURPOSE_CODE_RTO_APPLICATION = "RTO_APPLICATION";
     public const PAYMENT_PURPOSE_CODE_OTHER = "OTHER";
 
-    public function paymentConfigurations(): BelongsToMany
-    {
-        return $this->belongsToMany(PaymentConfiguration::class, "payment_purpose_configuration");
-    }
+    public const PAYMENT_PURPOSES = [
+        self::PAYMENT_PURPOSE_CODE_COURSE_ENROLLMENT => "Course Enrollment Payment",
+        self::PAYMENT_PURPOSE_CODE_NASCIB_MEMBERSHIP_PAYMENT => "Nascib Membership Payment",
+        self::PAYMENT_PURPOSE_CODE_RTO_APPLICATION => "RTO Application Payment",
+        self::PAYMENT_PURPOSE_CODE_OTHER => "Other Payment",
+    ];
 
     public const PURPOSE_RELATED_INVOICE_PREFIX = [
         self::PAYMENT_PURPOSE_CODE_COURSE_ENROLLMENT => "EN",
@@ -24,5 +26,21 @@ class PaymentPurpose extends BaseModel
         self::PAYMENT_PURPOSE_CODE_RTO_APPLICATION => "RA",
         self::PAYMENT_PURPOSE_CODE_OTHER => "OP",
     ];
+
+    public const PURPOSE_RELATED_INVOICE_SIZE = [
+        self::PAYMENT_PURPOSE_CODE_COURSE_ENROLLMENT => 36,
+        self::PAYMENT_PURPOSE_CODE_NASCIB_MEMBERSHIP_PAYMENT =>36,
+        self::PAYMENT_PURPOSE_CODE_RTO_APPLICATION => 36,
+        self::PAYMENT_PURPOSE_CODE_OTHER => 36,
+    ];
+
+    public function paymentConfigurations(string $gatewayType = null): BelongsToMany
+    {
+        $relation = $this->belongsToMany(PaymentConfiguration::class, "payment_purpose_configuration");
+        if ($gatewayType) {
+            $relation->where("payment_configurations.gateway_type", $gatewayType);
+        }
+        return $relation;
+    }
 
 }

@@ -8,16 +8,16 @@ class PaymentConfiguration extends BaseModel
     protected $guarded = BaseModel::COMMON_GUARDED_FIELDS_SIMPLE_SOFT_DELETE;
 
     /** INDUSTRY_ASSOCIATION,INDUSTRY,INSTITUTE,RTO */
-    public const PAYMENT_CONFIG_OWNER_INDUSTRY_ASSOCIATION = "INDUSTRY_ASSOCIATION";
-    public const PAYMENT_CONFIG_OWNER_INDUSTRY = "INDUSTRY";
-    public const PAYMENT_CONFIG_OWNER_INSTITUTE = "INSTITUTE";
-    public const PAYMENT_CONFIG_OWNER_RTO = "RTO";
+    public const PAYMENT_CONFIG_ACCESSOR_INDUSTRY_ASSOCIATION = "INDUSTRY_ASSOCIATION";
+    public const PAYMENT_CONFIG_ACCESSOR_INDUSTRY = "INDUSTRY";
+    public const PAYMENT_CONFIG_ACCESSOR_INSTITUTE = "INSTITUTE";
+    public const PAYMENT_CONFIG_ACCESSOR_RTO = "RTO";
 
-    public const PAYMENT_CONFIG_OWNERS = [
-        self::PAYMENT_CONFIG_OWNER_INDUSTRY_ASSOCIATION => "Industry Association",
-        self::PAYMENT_CONFIG_OWNER_INDUSTRY => "Industry",
-        self::PAYMENT_CONFIG_OWNER_INSTITUTE => "Institute",
-        self::PAYMENT_CONFIG_OWNER_RTO => "RTO",
+    public const PAYMENT_CONFIG_ACCESSORS = [
+        self::PAYMENT_CONFIG_ACCESSOR_INDUSTRY_ASSOCIATION => "Industry Association",
+        self::PAYMENT_CONFIG_ACCESSOR_INDUSTRY => "Industry",
+        self::PAYMENT_CONFIG_ACCESSOR_INSTITUTE => "Institute",
+        self::PAYMENT_CONFIG_ACCESSOR_RTO => "RTO",
     ];
 
     /** Payment Gateway Type */

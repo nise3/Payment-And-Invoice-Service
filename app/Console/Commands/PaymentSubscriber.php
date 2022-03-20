@@ -20,7 +20,10 @@ class PaymentSubscriber extends Command
     public function handle()
     {
         Redis::psubscribe(['payment.*'], function ($message, $channel) {
-            Log::info("redis- " . json_encode([$message, $channel]));
+            echo json_encode([
+                $message,
+                $channel
+            ],JSON_PRETTY_PRINT);
         });
     }
 }
