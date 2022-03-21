@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use PHPUnit\Util\Json;
+use Psy\Util\Json;
 
 /**
- * Class PaymentTransactionHistory
+ * Class PaymentTransactionInvoice
  * @property int id
  * @property string invoice
  * @property string mer_trnx_id
@@ -21,13 +21,13 @@ use PHPUnit\Util\Json;
  * @property double amount
  * @property double paid_amount
  * @property string trnx_currency
- * @property json request_payload
- * @property json response_message
+ * @property Json request_payload
+ * @property Json response_message
  * @property int status
  * @property Carbon created_at
  * @property Carbon updated_at
  */
-class PaymentTransactionHistory extends BaseModel
+class PaymentTransactionInvoice extends BaseModel
 {
     protected $guarded=BaseModel::COMMON_GUARDED_FIELDS_SIMPLE;
 
@@ -42,19 +42,22 @@ class PaymentTransactionHistory extends BaseModel
     public const SSLCOMMERZ_LABEL = "ssl_commerz";
     public const DBBL_MOBILE_BANKING = "dbbl_mobile_banking";
     public const BKASH = "bkash";
+    public const NAGAD = "nagad";
     public const PORT_WALLET = "port_wallet";
 
     public const PAYMENT_GATEWAY_EK_PAY = 1;
     public const PAYMENT_GATEWAY_SSLCOMMERZ = 2;
     public const PAYMENT_GATEWAY_DBBL_MOBILE_BANKING = 3;
     public const PAYMENT_GATEWAY_BKASH = 4;
-    public const PAYMENT_GATEWAY_PORT_WALLET = 5;
+    public const PAYMENT_GATEWAY_NAGAD = 5;
+    public const PAYMENT_GATEWAY_PORT_WALLET = 6;
 
     public const PAYMENT_GATEWAYS = [
         self::EK_PAY_LABEL => self::PAYMENT_GATEWAY_EK_PAY,
         self::SSLCOMMERZ_LABEL => self::PAYMENT_GATEWAY_SSLCOMMERZ,
         self::DBBL_MOBILE_BANKING => self::PAYMENT_GATEWAY_DBBL_MOBILE_BANKING,
         self::BKASH => self::PAYMENT_GATEWAY_BKASH,
+        self::NAGAD => self::PAYMENT_GATEWAY_NAGAD,
         self::PORT_WALLET => self::PAYMENT_GATEWAY_PORT_WALLET
     ];
 

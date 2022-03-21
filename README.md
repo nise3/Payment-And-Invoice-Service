@@ -1,4 +1,4 @@
-# NISE Cube Invoice & Accounting API Service
+# NISE Cube Payment & Invoice API Service
 
 ```shell
 RELEASE = 'php artisan list'

@@ -63,7 +63,7 @@ $app->singleton(
 $app->configure('app');
 $app->configure('auth');
 $app->configure('services');
-$app->configure('nise3');
+$app->configure('payment');
 $app->configure('httpclientendpoint');
 $app->configure('queue');
 $app->configure('nise3RabbitMq');
