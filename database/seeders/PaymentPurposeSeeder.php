@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Helpers\Classes\PaymentHelper;
 use App\Models\PaymentPurpose;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -22,21 +23,27 @@ class PaymentPurposeSeeder extends Seeder
         $purposes = [
             [
                 "id" => 1,
-                "code" => PaymentPurpose::PAYMENT_PURPOSE_CODE_COURSE_ENROLLMENT,
+                "code" => PaymentHelper::PURPOSE_COURSE_ENROLLMENT,
                 "title" => "Course Enrollment Payment",
-                "title_en" => "Course Enrollment Payment"
+                "title_en" => "Course Enrollment Payment",
+                "invoice_prefix"=>PaymentHelper::PURPOSE_RELATED_INVOICE_PREFIX[PaymentHelper::PURPOSE_COURSE_ENROLLMENT],
+                "invoice_key_size"=>PaymentHelper::INVOICE_SIZE
             ],
             [
                 "id" => 2,
-                "code" => PaymentPurpose::PAYMENT_PURPOSE_CODE_NASCIB_MEMBERSHIP_PAYMENT,
+                "code" => PaymentHelper::PURPOSE_ASSOCIATION_NASCIB_MEMBERSHIP,
                 "title" => "Nascib Membership Payment",
-                "title_en" => "Nascib Membership Payment"
+                "title_en" => "Nascib Membership Payment",
+                "invoice_prefix"=>PaymentHelper::PURPOSE_RELATED_INVOICE_PREFIX[PaymentHelper::PURPOSE_ASSOCIATION_NASCIB_MEMBERSHIP],
+                "invoice_key_size"=>PaymentHelper::INVOICE_SIZE
             ],
             [
                 "id" => 3,
-                "code" => PaymentPurpose::PAYMENT_PURPOSE_CODE_RTO_APPLICATION,
+                "code" => PaymentHelper::PURPOSE_RPL_CERTIFICATION_APPLICATION,
                 "title" => "RTO Application Payment",
-                "title_en" => "RTO Application Payment"
+                "title_en" => "RTO Application Payment",
+                "invoice_prefix"=>PaymentHelper::PURPOSE_RELATED_INVOICE_PREFIX[PaymentHelper::PURPOSE_RPL_CERTIFICATION_APPLICATION],
+                "invoice_key_size"=>PaymentHelper::INVOICE_SIZE
             ]
         ];
 

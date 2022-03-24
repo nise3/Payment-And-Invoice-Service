@@ -18,6 +18,8 @@ class CreatePaymentPurposesTable extends Migration
             $table->string("code")->unique();
             $table->string("title");
             $table->string("title_en")->nullable();
+            $table->string("invoice_prefix")->unique();
+            $table->string("invoice_key_size")->nullable();
             $table->unsignedTinyInteger("row_status")->default(1);
             $table->timestamps();
         });

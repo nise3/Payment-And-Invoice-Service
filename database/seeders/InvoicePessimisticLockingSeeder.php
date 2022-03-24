@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Helpers\Classes\PaymentHelper;
 use App\Models\InvoicePessimisticLocking;
-use App\Models\PaymentPurpose;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
 
@@ -21,19 +21,19 @@ class InvoicePessimisticLockingSeeder extends Seeder
         $purposeRelatedInvoiceInitialData = [
             [
                 "last_incremental_value" => 0,
-                "purpose" => PaymentPurpose::PAYMENT_PURPOSE_CODE_OTHER
+                "purpose" => PaymentHelper::PURPOSE_COURSE_ENROLLMENT
             ],
             [
                 "last_incremental_value" => 0,
-                "purpose" => PaymentPurpose::PAYMENT_PURPOSE_CODE_COURSE_ENROLLMENT
+                "purpose" => PaymentHelper::PURPOSE_RPL_CERTIFICATION_APPLICATION
             ],
             [
                 "last_incremental_value" => 0,
-                "purpose" => PaymentPurpose::PAYMENT_PURPOSE_CODE_NASCIB_MEMBERSHIP_PAYMENT
+                "purpose" => PaymentHelper::PURPOSE_RTO_TO_BTEB
             ],
             [
                 "last_incremental_value" => 0,
-                "purpose" => PaymentPurpose::PAYMENT_PURPOSE_CODE_RTO_APPLICATION
+                "purpose" => PaymentHelper::PURPOSE_ASSOCIATION_NASCIB_MEMBERSHIP
             ],
         ];
         InvoicePessimisticLocking::insert($purposeRelatedInvoiceInitialData);

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Facade\ServiceToServiceCall;
+use App\Helpers\Classes\PaymentHelper;
 use App\Models\BaseModel;
 use App\Models\InvoicePessimisticLocking;
 use App\Models\PaymentPurpose;
@@ -26,12 +27,13 @@ class InvoiceGeneratorService
     {
         DB::beginTransaction();
         try {
+            $paymentPurpose = PaymentPurpose::where('code', $purpose)->firstOrFail();
             /** @var InvoicePessimisticLocking $existingSSPCode */
             $existingCode = InvoicePessimisticLocking::where('purpose', $purpose)->lockForUpdate()->first();
             $code = !empty($existingCode) && $existingCode->last_incremental_value ? $existingCode->last_incremental_value : 0;
             $code = $code + 1;
-            $invoiceSize = PaymentPurpose::PURPOSE_RELATED_INVOICE_SIZE[$purpose];
-            $invoicePrefix = PaymentPurpose::PURPOSE_RELATED_INVOICE_PREFIX[$purpose];
+            $invoicePrefix= $paymentPurpose->invoice_prefix;
+            $invoiceSize = $paymentPurpose->invoice_key_size ?: PaymentHelper::INVOICE_SIZE;
             $padSize = $invoiceSize - strlen($code);
             /**
              * Prefix+000000N. Ex: EN+incremental number

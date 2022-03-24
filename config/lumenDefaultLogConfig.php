@@ -35,6 +35,7 @@ return [
     */
 
     'channels' => [
+        'kafka' => Hhxsv5\LKL\KafkaLogger::getDefinition(['topic' => env('LOG_KAFKA_TOPIC', 'laravel-logs')]),
         'idp_user' => [
             'driver' => 'daily',
             'path' => storage_path('logs/idp-user-logs/' . date('Y/F/') . 'idp-user.log'),
@@ -57,7 +58,7 @@ return [
         ],
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['daily'],
+            'channels' => ['kafka'],
         ],
         'single' => [
             'driver' => 'single',

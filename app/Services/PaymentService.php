@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
-use App\Models\PaymentConfiguration;
+use App\Helpers\Classes\PaymentHelper;
 use App\Models\PaymentPurpose;
 use App\Models\PaymentTransactionLog;
 use App\Services\EkPay\EkPayPaymentService;
 use Carbon\Carbon;
-use ClassPreloader\CodeGenerator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Throwable;
@@ -29,7 +29,7 @@ class PaymentService
         $requestPayload = [];
         $redirectUri = null;
         $status = false;
-        if ($gatewayType == PaymentConfiguration::EK_PAY_LABEL) {
+        if ($gatewayType == PaymentHelper::GATEWAY_EKPAY) {
             [$requestPayload, $redirectUri] = app(EkPayPaymentService::class)->ekPay($data, $paymentConfig);
             $status = (bool)$redirectUri;
             $message = "Success";
@@ -38,7 +38,6 @@ class PaymentService
                 $ipnUriSecretToken = end($parts);
                 /** Data store in history log */
                 $data['invoice'] = $invoice;
-                $data['merchant_transaction_id'] = $requestPayload['trns_info']['trnx_id'];
                 $data['payment_purpose'] = $data['payment_config']['purpose'];
                 $data['payment_purpose_related_id'] = $data['payment_config']['purpose_related_id'];
                 $data['payment_gateway_type'] = $gatewayType;
@@ -49,7 +48,7 @@ class PaymentService
                 $data['transaction_created_at'] = Carbon::now();
                 $this->storeDataInPaymentLog($data);
             }
-        } elseif ($gatewayType == PaymentConfiguration::SSLCOMMERZ_LABEL) {
+        } elseif ($gatewayType == PaymentHelper::GATEWAY_SSLCOMMERZ) {
             [$requestPayload, $redirectUri] = app(EkPayPaymentService::class)->ekPay($data, $paymentConfig);
             $status = (bool)$redirectUri;
             $message = "Success";
@@ -64,11 +63,17 @@ class PaymentService
         ];
     }
 
-    private function storeDataInPaymentLog(array $data)
+    private function storeDataInPaymentLog(array $data, bool $isUpdate = false)
     {
-        $paymentLog = new PaymentTransactionLog();
-        $paymentLog->fill($data);
-        $paymentLog->save();
+
+        $paymentLog = $isUpdate ? PaymentTransactionLog::where('invoice', $data['transaction_id'])->where("amount", $data['amount'])->where("transaction_currency", $data['transaction_currency'])->first() : new PaymentTransactionLog();
+        if ($paymentLog) {
+            $paymentLog->fill($data);
+            $paymentLog->save();
+        } else {
+            Log::debug('The payment_traction_log payload is not valid, here is the payload: ', $data);
+        }
+
     }
 
     private function getPaymentConfig(array $data): array
@@ -79,12 +84,32 @@ class PaymentService
         return $paymentConfigData['configuration'][$configChild];
     }
 
+    public static function checkSecretToken(string $secretToken): bool
+    {
+        return (bool)PaymentTransactionLog::where('ipn_uri_secret_token', $secretToken)->count('ipn_uri_secret_token');
+    }
+
+    public function handleIpn(Request $request, string $secretToken)
+    {
+        $paymentGatewayType = $this->getPaymentGateway($secretToken);
+        $response = [];
+        if ($paymentGatewayType == PaymentHelper::GATEWAY_EKPAY) {
+            $response = app(EkPayPaymentService::class)->ipnResponseProcessing($request);
+        }
+
+    }
+
+    private function getPaymentGateway(string $secretToken): string
+    {
+        return PaymentTransactionLog::where("ipn_uri_secret_token")->findOrfail()->payment_gateway_type;
+    }
+
     public function validation(Request $request): \Illuminate\Contracts\Validation\Validator
     {
         $rules = [
             "payment_config.accessor" => [
                 "required",
-                Rule::in(array_keys(PaymentConfiguration::PAYMENT_CONFIG_ACCESSORS))
+                Rule::in(array_keys(PaymentHelper::ALL_ACCESSORS))
             ],
             "payment_config.accessor_id" => [
                 "required",
@@ -93,11 +118,11 @@ class PaymentService
             ],
             "payment_config.gateway_type" => [
                 "required",
-                Rule::in(array_keys(PaymentConfiguration::PAYMENT_GATEWAYS))
+                Rule::in(array_keys(PaymentHelper::ALL_PAYMENT_GATEWAYS))
             ],
             "payment_config.purpose" => [
                 "required",
-                Rule::in(array_keys(PaymentPurpose::PAYMENT_PURPOSES))
+                Rule::in(PaymentHelper::ALL_PURPOSES)
             ],
             "payment_config.purpose_related_id" => [
                 "required",

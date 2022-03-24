@@ -3,14 +3,17 @@
 namespace App\Services\EkPay;
 
 use App\Exceptions\HttpErrorException;
+use App\Helpers\Classes\PaymentHelper;
 use Carbon\Carbon;
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use JetBrains\PhpStorm\ArrayShape;
+use JetBrains\PhpStorm\Pure;
 
 class EkPayPaymentService
 {
@@ -51,6 +54,43 @@ class EkPayPaymentService
             $payload,
             $redirectUri
         ];
+    }
+
+
+    #[ArrayShape(["transaction_id" => "mixed", "amount" => "mixed", "currency" => "mixed", "payment_status_code" => "int", "response_message" => "array"])]
+    public function ipnResponseProcessing(array $request,bool $isInit=true): array
+    {
+        //$request['trnx_info']['mer_trnx_id']??
+        $response= [
+            "customer_id"=>$request['cust_info']['id'],
+            "customer_name"=>$request['cust_info']['cust_name'],
+            "customer_mobile"=>$request['cust_info']['cust_mobo_no'],
+            "customer_email"=>$request['cust_info']['cust_email'],
+            "invoice" => $request['trnx_info']['trnx_id'],
+            "amount" => $request['trnx_info']['trnx_amt'],
+            "currency" => $request['trnx_info']['trnx_currency'],
+            "request_payload" => $request,
+            'transaction_created_at' => Carbon::now()
+        ];
+    }
+
+
+    /**
+     * @param string $msgCode
+     * @return int
+     */
+    public function getPaymentStatus(string $msgCode): int
+    {
+        if ($msgCode == PaymentHelper::EK_PAY_TRANSACTION_SUCCESS) {
+            return PaymentHelper::PAYMENT_STATUS_SUCCESS;
+        } elseif ($msgCode == PaymentHelper::PAYMENT_STATUS_FAILED) {
+            return PaymentHelper::PAYMENT_STATUS_FAILED;
+        } elseif ($msgCode == PaymentHelper::EK_PAY_TRANSACTION_CANCEL) {
+            return PaymentHelper::PAYMENT_STATUS_CANCEL;
+        } else {
+            return PaymentHelper::PAYMENT_STATUS_PENDING;
+        }
+
     }
 
     private function validation(array $data): \Illuminate\Contracts\Validation\Validator

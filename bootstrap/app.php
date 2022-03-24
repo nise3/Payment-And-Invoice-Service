@@ -74,6 +74,7 @@ $app->configure('sms');
 $app->configure('elasticSearchLogConfig');
 $app->configure('lumenDefaultLogConfig');
 $app->configure('paymentConfiguration');
+$app->configure('kafka');
 
 /*
 |--------------------------------------------------------------------------
@@ -120,6 +121,7 @@ $app->register(App\Providers\RabbitMQServiceProvider::class);
 $app->register(VladimirYuldashev\LaravelQueueRabbitMQ\LaravelQueueRabbitMQServiceProvider::class);
 $app->register(Khbd\LaravelSmsBD\SMSServiceProvider::class);
 $app->register(Ixudra\Curl\CurlServiceProvider::class);
+$app->register(Junges\Kafka\Providers\LaravelKafkaServiceProvider::class);
 
 
 

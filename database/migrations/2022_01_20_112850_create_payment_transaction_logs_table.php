@@ -15,21 +15,21 @@ class CreatePaymentTransactionLogsTable extends Migration
     {
         Schema::create('payment_transaction_logs', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('payment_transaction_history_id')->nullable();
             $table->char('invoice', 36);
-            $table->string('merchant_transaction_id', 64)->unique();
-            $table->string('transaction_id', 100)->nullable();
             $table->string('payment_purpose');
             $table->unsignedInteger('payment_purpose_related_id');
             $table->string('payment_gateway_type')
-                ->comment("1=Ek-Pay, 2=>SSLCOMMERZ, 2=> DBBL Mobile Banking, 3=>Bkash, 4=>PortWallet");
-            $table->unsignedDecimal('amount', 12, 4);
-            $table->unsignedDecimal('paid_amount', 12, 4)->nullable();
+                ->comment("1 => Ek-Pay, 2 => SSLCOMMERZ, 2 => DBBL Mobile Banking, 3 => Bkash, 4 => Nagad, 5 => PortWallet");
+            $table->string('customer_id');
+            $table->string('customer_name', 500)->nullable();
+            $table->string('customer_name_en', 250)->nullable();
+            $table->string('customer_mobile', 15)->nullable();
+            $table->string('customer_email', 150)->nullable();
             $table->char('transaction_currency', 3)->comment('BDT');
+            $table->unsignedDecimal('amount', 12, 4);
             $table->json('request_payload')->nullable();
             $table->json('response_message')->nullable();
-            $table->string('status')->default(2)->comment("1=>Success, 2=>Pending, 3=>Fail, 5=>Cancel");
-            $table->string('ipn_uri_secret_token');
+            $table->string('payment_status')->default(2)->comment("1=>Success, 2=>Pending, 3=>Fail, 5=>Cancel");
             $table->dateTime("transaction_created_at");
             $table->dateTime("transaction_completed_at")->nullable();
             $table->timestamps();

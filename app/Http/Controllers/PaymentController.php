@@ -2,9 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Facade\ServiceToServiceCall;
+use App\Models\PaymentTransactionHistory;
+use App\Models\PaymentTransactionLog;
+use App\Models\RplApplication;
 use App\Services\PaymentService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response as ResponseAlias;
@@ -48,8 +54,21 @@ class PaymentController extends Controller
 
     }
 
-    public function ipnHandler(Request $request)
+    public function ipn(Request $request, string $secretToken)
     {
+        Log::debug("ipn-response", $request->all());
 
+        if (PaymentService::checkSecretToken($secretToken)) {
+            DB::beginTransaction();
+            try {
+                $this->paymentService->handleIpn($request,$secretToken);
+                DB::commit();
+            } catch (\Exception $exception) {
+                DB::rollBack();
+                throw $exception;
+            }
+        } else {
+            Log::debug('ipn-handler-secret-token-info', $request->all());
+        }
     }
 }

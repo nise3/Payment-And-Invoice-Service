@@ -3,6 +3,8 @@
 /** @var \Laravel\Lumen\Routing\Router $router */
 
 use App\Helpers\Classes\CustomRouter;
+use Enqueue\RdKafka\RdKafkaConnectionFactory;
+use Junges\Kafka\Facades\Kafka;
 
 $customRouter = function (string $as = '') use ($router) {
     $custom = new CustomRouter($router);
@@ -28,13 +30,38 @@ $router->group(['prefix' => 'api/v1', 'as' => 'api.v1'], function () use ($route
 
     });
 
+
+    $router->get("publish", function () {
+        $broker = new \App\Helpers\Classes\Broker();
+        $broker->publishOn("topic-1", [
+            "name" => "Broker22222",
+            "email" => "email@gmail.com222"
+        ]);
+    });
+    $router->get("con1", function () {
+        $broker = new \App\Helpers\Classes\Broker();
+        $sub = $broker->subscribeOn("topic-1");
+        $message = $sub->receive();
+        $sub->acknowledge($message);
+        return $message->getBody();
+    });
+    $router->get("con2", function () {
+        $consumer = \Junges\Kafka\Facades\Kafka::createConsumer(['topic']);
+
+    });
+    $router->get("test", function () {
+        request()->offsetSet('exchange_name', 'mailSms');
+        request()->offsetSet('queue_config_name', 'mail');
+        request()->offsetSet('retry_mechanism', true);
+        event(new \App\Events\PaymentSuccessEvent([
+            "testing"
+        ]));
+
+        \Illuminate\Support\Facades\Log::debug("djdjjdjdjjdjd", [
+            "time" => time()
+        ]);
+    });
 });
 
-$router->get("config", function () {
-    $paymentConfig = \App\Models\PaymentPurpose::where('code', \App\Models\PaymentPurpose::PAYMENT_PURPOSE_CODE_COURSE_ENROLLMENT)->firstOrFail();
-    $paymentConfigData=$paymentConfig->paymentConfigurations(\App\Models\PaymentConfiguration::EK_PAY_LABEL)->firstOrFail();
-    $configChild = env('IS_SANDBOX', false) ? "sandbox" : "production";
-    return $paymentConfigData['configuration'][$configChild];
-});
 
 

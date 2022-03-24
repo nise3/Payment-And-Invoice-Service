@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Helpers\Classes\PaymentHelper;
 use App\Models\PaymentConfiguration;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
@@ -18,61 +19,62 @@ class PaymentConfigurationSeeder extends Seeder
         Schema::disableForeignKeyConstraints();
         PaymentConfiguration::query()->truncate();
         $configurations = [
-            ["id" => 1,
-                "accessor" => PaymentConfiguration::PAYMENT_CONFIG_ACCESSOR_INDUSTRY_ASSOCIATION,
+            [
+                "id" => 1,
+                "accessor" => PaymentHelper::PAYMENT_CONFIG_ACCESSOR_INDUSTRY_ASSOCIATION,
                 "accessor_id" => 1,
-                "gateway_type" => PaymentConfiguration::EK_PAY_LABEL,
-                "configuration" => json_encode(config('paymentConfiguration.payment_gateways.' . PaymentConfiguration::EK_PAY_LABEL))
+                "gateway_type" => PaymentHelper::GATEWAY_EKPAY,
+                "configuration" => json_encode(config('paymentConfiguration.payment_gateways.' . PaymentHelper::GATEWAY_EKPAY))
             ],
             [
                 "id" => 2,
-                "accessor" => PaymentConfiguration::PAYMENT_CONFIG_ACCESSOR_INDUSTRY_ASSOCIATION,
+                "accessor" => PaymentHelper::PAYMENT_CONFIG_ACCESSOR_INDUSTRY_ASSOCIATION,
                 "accessor_id" => 1,
-                "gateway_type" => PaymentConfiguration::SSLCOMMERZ_LABEL,
-                "configuration" => json_encode(config('paymentConfiguration.payment_gateways.' . PaymentConfiguration::SSLCOMMERZ_LABEL))
+                "gateway_type" => PaymentHelper::GATEWAY_SSLCOMMERZ,
+                "configuration" => json_encode(config('paymentConfiguration.payment_gateways.' . PaymentHelper::GATEWAY_SSLCOMMERZ))
             ],
 
             [
                 "id" => 3,
-                "accessor" => PaymentConfiguration::PAYMENT_CONFIG_ACCESSOR_INDUSTRY,
+                "accessor" => PaymentHelper::PAYMENT_CONFIG_ACCESSOR_INDUSTRY,
                 "accessor_id" => 1,
-                "gateway_type" => PaymentConfiguration::EK_PAY_LABEL,
-                "configuration" => json_encode(config('paymentConfiguration.payment_gateways.' . PaymentConfiguration::EK_PAY_LABEL))
+                "gateway_type" => PaymentHelper::GATEWAY_EKPAY,
+                "configuration" => json_encode(config('paymentConfiguration.payment_gateways.' . PaymentHelper::GATEWAY_EKPAY))
             ],
             [
                 "id" => 4,
-                "accessor" => PaymentConfiguration::PAYMENT_CONFIG_ACCESSOR_INDUSTRY,
+                "accessor" => PaymentHelper::PAYMENT_CONFIG_ACCESSOR_INDUSTRY,
                 "accessor_id" => 1,
-                "gateway_type" => PaymentConfiguration::SSLCOMMERZ_LABEL,
-                "configuration" => json_encode(config('paymentConfiguration.payment_gateways.' . PaymentConfiguration::SSLCOMMERZ_LABEL))
+                "gateway_type" => PaymentHelper::GATEWAY_SSLCOMMERZ,
+                "configuration" => json_encode(config('paymentConfiguration.payment_gateways.' . PaymentHelper::GATEWAY_SSLCOMMERZ))
             ],
             [
                 "id" => 5,
-                "accessor" => PaymentConfiguration::PAYMENT_CONFIG_ACCESSOR_INSTITUTE,
+                "accessor" => PaymentHelper::PAYMENT_CONFIG_ACCESSOR_INSTITUTE,
                 "accessor_id" => 1,
-                "gateway_type" => PaymentConfiguration::EK_PAY_LABEL,
-                "configuration" => json_encode(config('paymentConfiguration.payment_gateways.' . PaymentConfiguration::EK_PAY_LABEL))
+                "gateway_type" => PaymentHelper::GATEWAY_EKPAY,
+                "configuration" => json_encode(config('paymentConfiguration.payment_gateways.' . PaymentHelper::GATEWAY_EKPAY))
             ],
             [
                 "id" => 6,
-                "accessor" => PaymentConfiguration::PAYMENT_CONFIG_ACCESSOR_INSTITUTE,
+                "accessor" => PaymentHelper::PAYMENT_CONFIG_ACCESSOR_INSTITUTE,
                 "accessor_id" => 1,
-                "gateway_type" => PaymentConfiguration::SSLCOMMERZ_LABEL,
-                "configuration" => json_encode(config('paymentConfiguration.payment_gateways.' . PaymentConfiguration::SSLCOMMERZ_LABEL))
+                "gateway_type" => PaymentHelper::GATEWAY_SSLCOMMERZ,
+                "configuration" => json_encode(config('paymentConfiguration.payment_gateways.' . PaymentHelper::GATEWAY_SSLCOMMERZ))
             ],
             [
                 "id" => 7,
-                "accessor" => PaymentConfiguration::PAYMENT_CONFIG_ACCESSOR_RTO,
+                "accessor" => PaymentHelper::PAYMENT_CONFIG_ACCESSOR_RTO,
                 "accessor_id" => 1,
-                "gateway_type" => PaymentConfiguration::EK_PAY_LABEL,
-                "configuration" => json_encode(config('paymentConfiguration.payment_gateways.' . PaymentConfiguration::EK_PAY_LABEL))
+                "gateway_type" => PaymentHelper::GATEWAY_EKPAY,
+                "configuration" => json_encode(config('paymentConfiguration.payment_gateways.' . PaymentHelper::GATEWAY_EKPAY))
             ],
             [
                 "id" => 8,
-                "accessor" => PaymentConfiguration::PAYMENT_CONFIG_ACCESSOR_RTO,
+                "accessor" => PaymentHelper::PAYMENT_CONFIG_ACCESSOR_RTO,
                 "accessor_id" => 1,
-                "gateway_type" => PaymentConfiguration::SSLCOMMERZ_LABEL,
-                "configuration" => json_encode(config('paymentConfiguration.payment_gateways.' . PaymentConfiguration::SSLCOMMERZ_LABEL))
+                "gateway_type" => PaymentHelper::GATEWAY_SSLCOMMERZ,
+                "configuration" => json_encode(config('paymentConfiguration.payment_gateways.' . PaymentHelper::GATEWAY_SSLCOMMERZ))
             ]
         ];
 
