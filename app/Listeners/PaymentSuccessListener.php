@@ -14,12 +14,6 @@ class PaymentSuccessListener implements ShouldQueue
 
     private RabbitMQConnector $connector;
     private RabbitMQService $rabbitmqService;
-
-    /** Set rabbitmq config where this event is going to publish */
-    private const EXCHANGE_CONFIG_NAME = 'mailSms';
-    private const QUEUE_CONFIG_NAME = 'mail';
-    private const RETRY_MECHANISM = true;
-
     /**
      * @throws Exception
      */
@@ -28,6 +22,7 @@ class PaymentSuccessListener implements ShouldQueue
 
         $this->connector = $connector;
         $this->rabbitmqService = $rabbitmqService;
+
         RabbitMQFacade::publishEvent(
             $this->connector,
             $this->rabbitmqService,

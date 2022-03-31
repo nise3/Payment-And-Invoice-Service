@@ -20,6 +20,7 @@ class CreatePaymentPurposesTable extends Migration
             $table->string("title_en")->nullable();
             $table->string("invoice_prefix")->unique();
             $table->string("invoice_key_size")->nullable();
+            $table->string("payment_related_queue_name");
             $table->unsignedTinyInteger("row_status")->default(1);
             $table->timestamps();
         });

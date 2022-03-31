@@ -8,6 +8,7 @@ use App\Models\PaymentTransactionLog;
 use App\Models\RplApplication;
 use App\Services\PaymentService;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -54,14 +55,34 @@ class PaymentController extends Controller
 
     }
 
-    public function ipn(Request $request, string $secretToken)
+
+    public function paymentConfig(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $validatedData = $this->paymentService->paymentConfigValidation($request)->validate();
+        $paymentConfig = $this->paymentService->getPaymentConfigByPaymentPurpose($validatedData);
+        $responseStatusCode = ResponseAlias::HTTP_OK;
+        $response['data'] = $paymentConfig;
+        $response['_response_status'] = [
+            "success" => true,
+            "code" => $responseStatusCode,
+            "message" => "Payment Config",
+            "query_time" => $this->startTime->diffInSeconds(\Illuminate\Support\Carbon::now()),
+        ];
+        return Response::json($response, $responseStatusCode);
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function ipn(Request $request, string $secretKey)
     {
         Log::debug("ipn-response", $request->all());
 
-        if (PaymentService::checkSecretToken($secretToken)) {
+        if (PaymentService::checkSecretToken($secretKey)) {
             DB::beginTransaction();
             try {
-                $this->paymentService->handleIpn($request,$secretToken);
+                $this->paymentService->handleIpn($request, $secretKey);
                 DB::commit();
             } catch (\Exception $exception) {
                 DB::rollBack();

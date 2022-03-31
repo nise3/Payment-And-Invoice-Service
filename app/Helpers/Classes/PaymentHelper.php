@@ -64,6 +64,21 @@ class PaymentHelper
         self::PURPOSE_RTO_TO_BTEB => "OP",
     ];
 
+    /** Global Rabbit Queue Config for payment service wise */
+    const INSTITUTE_PAYMENT = "payment_institute";
+    const INDUSTRY_ASSOCIATION_PAYMENT = "payment_industry_association";
+    const RABBIT_PAYMENT_QUEUE_LIST = [
+        self::INSTITUTE_PAYMENT,
+        self::INDUSTRY_ASSOCIATION_PAYMENT
+    ];
+
+    const PURPOSE_RELATED_PAYMENT_QUEUE = [
+        self::PURPOSE_COURSE_ENROLLMENT => self::INSTITUTE_PAYMENT,
+        self::PURPOSE_ASSOCIATION_NASCIB_MEMBERSHIP => self::INDUSTRY_ASSOCIATION_PAYMENT,
+        self::PURPOSE_RPL_CERTIFICATION_APPLICATION => self::INSTITUTE_PAYMENT,
+        self::PURPOSE_RTO_TO_BTEB => self::INSTITUTE_PAYMENT,
+    ];
+
     /**Payment status*/
     const PAYMENT_STATUS_SUCCESS = 1;
     const PAYMENT_STATUS_PENDING = 2;

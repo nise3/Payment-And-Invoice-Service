@@ -29,7 +29,7 @@ class InvoiceGeneratorService
         try {
             $paymentPurpose = PaymentPurpose::where('code', $purpose)->firstOrFail();
             /** @var InvoicePessimisticLocking $existingSSPCode */
-            $existingCode = InvoicePessimisticLocking::where('purpose', $purpose)->lockForUpdate()->first();
+            $existingCode = InvoicePessimisticLocking::lockForUpdate()->first();
             $code = !empty($existingCode) && $existingCode->last_incremental_value ? $existingCode->last_incremental_value : 0;
             $code = $code + 1;
             $invoicePrefix= $paymentPurpose->invoice_prefix;
@@ -48,8 +48,7 @@ class InvoiceGeneratorService
                 $existingCode->save();
             } else {
                 InvoicePessimisticLocking::create([
-                    "last_incremental_value" => $code,
-                    "purpose" => $purpose
+                    "last_incremental_value" => $code
                 ]);
             }
             DB::commit();

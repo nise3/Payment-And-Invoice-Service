@@ -20,21 +20,8 @@ class InvoicePessimisticLockingSeeder extends Seeder
         InvoicePessimisticLocking::query()->truncate();
         $purposeRelatedInvoiceInitialData = [
             [
-                "last_incremental_value" => 0,
-                "purpose" => PaymentHelper::PURPOSE_COURSE_ENROLLMENT
-            ],
-            [
-                "last_incremental_value" => 0,
-                "purpose" => PaymentHelper::PURPOSE_RPL_CERTIFICATION_APPLICATION
-            ],
-            [
-                "last_incremental_value" => 0,
-                "purpose" => PaymentHelper::PURPOSE_RTO_TO_BTEB
-            ],
-            [
-                "last_incremental_value" => 0,
-                "purpose" => PaymentHelper::PURPOSE_ASSOCIATION_NASCIB_MEMBERSHIP
-            ],
+                "last_incremental_value" => 50
+            ]
         ];
         InvoicePessimisticLocking::insert($purposeRelatedInvoiceInitialData);
     }

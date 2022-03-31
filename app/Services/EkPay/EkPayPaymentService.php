@@ -56,30 +56,37 @@ class EkPayPaymentService
         ];
     }
 
-
-    #[ArrayShape(["transaction_id" => "mixed", "amount" => "mixed", "currency" => "mixed", "payment_status_code" => "int", "response_message" => "array"])]
-    public function ipnResponseProcessing(array $request,bool $isInit=true): array
+    public function paymentLogPayloadBuilder(array $payload, array &$response, bool $isInit = true)
     {
-        //$request['trnx_info']['mer_trnx_id']??
-        $response= [
-            "customer_id"=>$request['cust_info']['id'],
-            "customer_name"=>$request['cust_info']['cust_name'],
-            "customer_mobile"=>$request['cust_info']['cust_mobo_no'],
-            "customer_email"=>$request['cust_info']['cust_email'],
-            "invoice" => $request['trnx_info']['trnx_id'],
-            "amount" => $request['trnx_info']['trnx_amt'],
-            "currency" => $request['trnx_info']['trnx_currency'],
-            "request_payload" => $request,
-            'transaction_created_at' => Carbon::now()
-        ];
-    }
 
+        if ($isInit) {
+            $response = [
+                "customer_id" => $payload['cust_info']['cust_id'],
+                "customer_name" => $payload['cust_info']['cust_name'],
+                "customer_mobile" => $payload['cust_info']['cust_mobo_no'],
+                "customer_email" => $payload['cust_info']['cust_email'],
+                "transaction_amount" => $payload['trns_info']['trnx_amt'],
+                "transaction_currency" => $payload['trns_info']['trnx_currency'],
+                "request_payload" => $payload,
+                'transaction_created_at' => Carbon::now()
+            ];
+        } else {
+            $response = [
+                "invoice" => $payload['trnx_info']['mer_trnx_id'], //merchant transaction is an invoice id
+                "transaction_amount" => $payload['trnx_info']['trnx_amt'],
+                "transaction_currency" => $payload['trnx_info']['curr'],
+                "response_message" => $payload,
+                "payment_status" => $this->getPaymentStatus($payload['msg_code']),
+                "transaction_completed_at" => Carbon::now()
+            ];
+        }
+    }
 
     /**
      * @param string $msgCode
      * @return int
      */
-    public function getPaymentStatus(string $msgCode): int
+    private function getPaymentStatus(string $msgCode): int
     {
         if ($msgCode == PaymentHelper::EK_PAY_TRANSACTION_SUCCESS) {
             return PaymentHelper::PAYMENT_STATUS_SUCCESS;

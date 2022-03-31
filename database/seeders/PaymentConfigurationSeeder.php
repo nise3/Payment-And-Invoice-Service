@@ -18,14 +18,16 @@ class PaymentConfigurationSeeder extends Seeder
     {
         Schema::disableForeignKeyConstraints();
         PaymentConfiguration::query()->truncate();
-        $configurations = [
+        $defaultConfiguration= [
             [
                 "id" => 1,
-                "accessor" => PaymentHelper::PAYMENT_CONFIG_ACCESSOR_INDUSTRY_ASSOCIATION,
-                "accessor_id" => 1,
+                "accessor" => PaymentHelper::PAYMENT_CONFIG_ACCESSOR_NISE,
                 "gateway_type" => PaymentHelper::GATEWAY_EKPAY,
                 "configuration" => json_encode(config('paymentConfiguration.payment_gateways.' . PaymentHelper::GATEWAY_EKPAY))
-            ],
+            ]
+        ];
+
+        $configurations=[
             [
                 "id" => 2,
                 "accessor" => PaymentHelper::PAYMENT_CONFIG_ACCESSOR_INDUSTRY_ASSOCIATION,
@@ -78,6 +80,7 @@ class PaymentConfigurationSeeder extends Seeder
             ]
         ];
 
+        PaymentConfiguration::insert($defaultConfiguration);
         PaymentConfiguration::insert($configurations);
         Schema::enableForeignKeyConstraints();
 

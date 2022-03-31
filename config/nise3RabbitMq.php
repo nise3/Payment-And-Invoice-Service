@@ -4,36 +4,36 @@ use App\Helpers\Classes\PaymentHelper;
 
 return [
     'exchanges' => [
-        PaymentHelper::PURPOSE_COURSE_ENROLLMENT => [
-            'name' => 'payment.course-enrollment.x',
+        PaymentHelper::INDUSTRY_ASSOCIATION_PAYMENT => [
+            'name' => PaymentHelper::INDUSTRY_ASSOCIATION_PAYMENT.'.x',
             'type' => 'topic',
             'durable' => true,
             'autoDelete' => false,
             'alternateExchange' => [
-                'name' => 'payment.course-enrollment.alternate.x',
+                'name' => PaymentHelper::INDUSTRY_ASSOCIATION_PAYMENT.'.alternate.x',
                 'type' => 'fanout',
                 'durable' => true,
                 'autoDelete' => false,
-                'queue' => 'payment.course-enrollment.alternate.q',
+                'queue' => PaymentHelper::INDUSTRY_ASSOCIATION_PAYMENT.'.alternate.q',
                 'queueDurable' => true,
                 'queueAutoDelete' => false,
                 'queueMode' => 'lazy',
             ],
             'dlx' => [
-                'name' => 'payment.course-enrollment.dlx',
+                'name' => PaymentHelper::INDUSTRY_ASSOCIATION_PAYMENT.'.dlx',
                 'type' => 'topic',
                 'durable' => true,
                 'autoDelete' => false
             ],
             'queue' => [
-                'demo' => [
-                    'name' => 'payment.course-enrollment.q',
-                    'binding' => 'payment.course-enrollment',
+                PaymentHelper::INSTITUTE_PAYMENT => [
+                    'name' => PaymentHelper::INDUSTRY_ASSOCIATION_PAYMENT.'.q',
+                    'binding' => PaymentHelper::INDUSTRY_ASSOCIATION_PAYMENT,
                     'durable' => true,
                     'autoDelete' => false,
                     'queueMode' => 'lazy',
                     'dlq' => [
-                        'name' => 'payment.course-enrollment.dlq',
+                        'name' => PaymentHelper::INDUSTRY_ASSOCIATION_PAYMENT.'.dlq',
                         'x_message_ttl' => 50000,
                         'durable' => true,
                         'autoDelete' => false,
@@ -42,74 +42,36 @@ return [
                 ]
             ],
         ],
-        PaymentHelper::PURPOSE_ASSOCIATION_NASCIB_MEMBERSHIP => [
-            'name' => 'payment.association-nascib-membership.x',
+        PaymentHelper::INSTITUTE_PAYMENT => [
+            'name' =>  PaymentHelper::INSTITUTE_PAYMENT.'.x',
             'type' => 'topic',
             'durable' => true,
             'autoDelete' => false,
             'alternateExchange' => [
-                'name' => 'payment.association-nascib-membership.alternate.x',
+                'name' =>  PaymentHelper::INSTITUTE_PAYMENT.'.alternate.x',
                 'type' => 'fanout',
                 'durable' => true,
                 'autoDelete' => false,
-                'queue' => 'payment.association-nascib-membership.alternate.q',
+                'queue' =>  PaymentHelper::INSTITUTE_PAYMENT.'.alternate.q',
                 'queueDurable' => true,
                 'queueAutoDelete' => false,
                 'queueMode' => 'lazy',
             ],
             'dlx' => [
-                'name' => 'payment.association-nascib-membership.dlx',
+                'name' =>  PaymentHelper::INSTITUTE_PAYMENT.'.dlx',
                 'type' => 'topic',
                 'durable' => true,
                 'autoDelete' => false
             ],
             'queue' => [
-                'demo' => [
-                    'name' => 'payment.association-nascib-membership.q',
-                    'binding' => 'payment.association-nascib-membership',
+                PaymentHelper::INSTITUTE_PAYMENT => [
+                    'name' =>  PaymentHelper::INSTITUTE_PAYMENT.'.q',
+                    'binding' =>  PaymentHelper::INSTITUTE_PAYMENT,
                     'durable' => true,
                     'autoDelete' => false,
                     'queueMode' => 'lazy',
                     'dlq' => [
-                        'name' => 'payment.association-nascib-membership.dlq',
-                        'x_message_ttl' => 50000,
-                        'durable' => true,
-                        'autoDelete' => false,
-                        'queueMode' => 'lazy'
-                    ],
-                ]
-            ],
-        ],
-        PaymentHelper::PURPOSE_RPL_CERTIFICATION_APPLICATION => [
-            'name' => 'payment.rpl-certification-application.x',
-            'type' => 'topic',
-            'durable' => true,
-            'autoDelete' => false,
-            'alternateExchange' => [
-                'name' => 'payment.rpl-certification-application.alternate.x',
-                'type' => 'fanout',
-                'durable' => true,
-                'autoDelete' => false,
-                'queue' => 'payment.rpl-certification-application.alternate.q',
-                'queueDurable' => true,
-                'queueAutoDelete' => false,
-                'queueMode' => 'lazy',
-            ],
-            'dlx' => [
-                'name' => 'payment.rpl-certification-application.dlx',
-                'type' => 'topic',
-                'durable' => true,
-                'autoDelete' => false
-            ],
-            'queue' => [
-                'demo' => [
-                    'name' => 'payment.rpl-certification-application.q',
-                    'binding' => 'payment.rpl-certification-application',
-                    'durable' => true,
-                    'autoDelete' => false,
-                    'queueMode' => 'lazy',
-                    'dlq' => [
-                        'name' => 'payment.rpl-certification-application.dlq',
+                        'name' =>  PaymentHelper::INSTITUTE_PAYMENT.'.dlq',
                         'x_message_ttl' => 50000,
                         'durable' => true,
                         'autoDelete' => false,
@@ -119,5 +81,5 @@ return [
             ],
         ],
     ],
-    'consume' => 'institute.course.enrollment.q,institute.batch.calender.q'
+    'consume' => 'payment_institute.q,payment_industry_association.q'
 ];

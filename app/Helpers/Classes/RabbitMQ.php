@@ -40,7 +40,6 @@ class RabbitMQ
         $queueDurable = config('nise3RabbitMq.exchanges.' . $configExchangeName . '.queue.' . $configQueueName . '.durable');
         $queueAutoDelete = config('nise3RabbitMq.exchanges.' . $configExchangeName . '.queue.' . $configQueueName . '.autoDelete');
         $queueMode = config('nise3RabbitMq.exchanges.' . $configExchangeName . '.queue.' . $configQueueName . '.queueMode');
-
         /** Set Config to publish the event message */
         config([
             'queue.connections.rabbitmq.options.exchange.name' => $exchange,
@@ -49,6 +48,7 @@ class RabbitMQ
             'queue.connections.rabbitmq.options.queue.exchange_type' => $type,
             'queue.connections.rabbitmq.options.queue.exchange_routing_key' => $binding
         ]);
+
 
         /** Create connection with RabbitMQ server */
         $config = config('queue.connections.rabbitmq');

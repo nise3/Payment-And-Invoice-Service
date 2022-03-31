@@ -26,7 +26,7 @@ class CreatePaymentTransactionHistoriesTable extends Migration
             $table->string('customer_mobile', 15)->nullable();
             $table->string('customer_email', 150)->nullable();
             $table->char('transaction_currency', 3)->comment('BDT');
-            $table->unsignedDecimal('amount', 12, 4);
+            $table->unsignedDecimal('transaction_amount', 12, 4);
             $table->json('request_payload')->nullable();
             $table->json('response_message')->nullable();
             $table->string('payment_status')->default(2)->comment("1=>Success, 2=>Pending, 3=>Fail, 5=>Cancel");

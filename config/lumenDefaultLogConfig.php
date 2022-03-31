@@ -58,7 +58,7 @@ return [
         ],
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['kafka'],
+            'channels' => ['daily'],
         ],
         'single' => [
             'driver' => 'single',
