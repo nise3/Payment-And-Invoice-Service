@@ -14,15 +14,13 @@ class CreatePaymentTransactionHistoriesTable extends Migration
     public function up()
     {
         Schema::create('payment_transaction_histories', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->char('invoice', 36);
             $table->string('payment_purpose');
             $table->unsignedInteger('payment_purpose_related_id');
             $table->string('payment_gateway_type')
                 ->comment("1 => Ek-Pay, 2 => SSLCOMMERZ, 2 => DBBL Mobile Banking, 3 => Bkash, 4 => Nagad, 5 => PortWallet");
-            $table->string('customer_id');
             $table->string('customer_name', 500)->nullable();
-            $table->string('customer_name_en', 250)->nullable();
             $table->string('customer_mobile', 15)->nullable();
             $table->string('customer_email', 150)->nullable();
             $table->char('transaction_currency', 3)->comment('BDT');

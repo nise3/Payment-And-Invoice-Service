@@ -23,6 +23,7 @@ $router->group(['prefix' => 'api/v1', 'as' => 'api.v1'], function () use ($route
     $router->group(['prefix' => 'public', 'as' => 'public'], function () use ($router) {
         $router->post("pay-now", ["as" => "pay-now", "uses" => "PaymentController@payNow"]);
         $router->post("ipn/{secretKey}", ["as" => "ipn", "uses" => "PaymentController@ipn"]);
+        $router->post("success", ["as" => "success", "uses" => "PaymentController@success"]);
     });
 
     /** Service to service direct call without any authorization and authentication */

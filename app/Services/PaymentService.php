@@ -9,6 +9,7 @@ use App\Models\PaymentPurpose;
 use App\Models\PaymentTransactionHistory;
 use App\Models\PaymentTransactionLog;
 use App\Services\EkPay\EkPayPaymentService;
+use App\Services\SslCommerz\SslCommerzPaymentGatewayService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -32,30 +33,42 @@ class PaymentService
         $requestPayload = [];
         $redirectUri = null;
         $status = false;
+        $paymentLog = [];
+
         if ($gatewayType == PaymentHelper::GATEWAY_EKPAY) {
             [$requestPayload, $redirectUri] = app(EkPayPaymentService::class)->ekPay($data, $paymentBaseConfiguration);
             $status = (bool)$redirectUri;
             $message = "Success";
             if ($status) {
-                $parts = explode('/', $requestPayload['ipn_info']['ipn_uri']);
-                $ipnUriSecretToken = end($parts);
                 /** Data store in history log */
-                $paymentLog = [];
                 app(EkPayPaymentService::class)->paymentLogPayloadBuilder($requestPayload, $paymentLog);
-                $paymentLog['invoice'] = $invoice;
-                $paymentLog['payment_purpose'] = $data['payment_config']['purpose'];
-                $paymentLog['payment_purpose_related_id'] = $data['payment_config']['purpose_related_id'];
-                $paymentLog['payment_gateway_type'] = $gatewayType;
-                $paymentLog['ipn_uri_secret_token'] = $ipnUriSecretToken;
-                $this->storeDataInPaymentLog($paymentLog);
             }
         } elseif ($gatewayType == PaymentHelper::GATEWAY_SSLCOMMERZ) {
-            [$requestPayload, $redirectUri] = app(EkPayPaymentService::class)->ekPay($data, $paymentBaseConfiguration);
+            [$requestPayload, $redirectUri] = app(SslCommerzPaymentGatewayService::class)->sslCommerzPay($data, $paymentBaseConfiguration);
             $status = (bool)$redirectUri;
             $message = "Success";
+
+            if ($status) {
+                /** Data store in history log */
+                app(SslCommerzPaymentGatewayService::class)->paymentLogPayloadBuilder($requestPayload, $paymentLog);
+            }
+
         } else {
             $message = "The Payment gateway is not found";
         }
+
+        /** Data Store in payment Log */
+        if ($paymentLog) {
+            $parts = explode('/',  $paymentBaseConfiguration['ipn_url']);
+            $ipnUriSecretToken = end($parts);
+            $paymentLog['invoice'] = $invoice;
+            $paymentLog['payment_purpose'] = $data['payment_config']['purpose'];
+            $paymentLog['payment_purpose_related_id'] = $data['payment_config']['purpose_related_id'];
+            $paymentLog['payment_gateway_type'] = $gatewayType;
+            $paymentLog['ipn_uri_secret_token'] = $ipnUriSecretToken;
+            $this->storeDataInPaymentLog($paymentLog);
+        }
+
 
         return [
             $status,
@@ -74,11 +87,15 @@ class PaymentService
     public function handleIpn(Request $request, string $secretToken)
     {
         $paymentGatewayType = $this->getPaymentGateway($secretToken);
+
         $response = [];
         if ($paymentGatewayType == PaymentHelper::GATEWAY_EKPAY) {
             app(EkPayPaymentService::class)->paymentLogPayloadBuilder($request->all(), $response, false);
+        }else if($paymentGatewayType == PaymentHelper::GATEWAY_SSLCOMMERZ){
+            app(SslCommerzPaymentGatewayService::class)->paymentLogPayloadBuilder($request->all(), $response, false);
         }
         $paymentLog = $this->storeDataInPaymentLog($response, true);
+
         if (!empty($paymentLog)) {
             $this->paymentEventFire($paymentLog);
         }
@@ -162,6 +179,7 @@ class PaymentService
     private function paymentEventFire(array $data)
     {
         $purposeRelatedQueue = PaymentPurpose::where("code", $data['payment_purpose'])->firstOrFail()->payment_related_queue_name;
+
         request()->offsetSet('exchange_name', $purposeRelatedQueue);
         request()->offsetSet('queue_config_name', $purposeRelatedQueue);
         request()->offsetSet('retry_mechanism', true);

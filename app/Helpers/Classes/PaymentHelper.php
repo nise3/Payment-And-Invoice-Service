@@ -89,4 +89,30 @@ class PaymentHelper
     const EK_PAY_TRANSACTION_SUCCESS = 1020;
     const EK_PAY_TRANSACTION_FAIL = 1021;
     const EK_PAY_TRANSACTION_CANCEL = 1022;
+
+    const SSL_STATUS_CODE_FAILED = "FAILED";
+    const SSL_STATUS_CODE_SUCCESS = "SUCCESS";
+
+    const GENERAL = 1;
+    const PHYSICAL_GOODS = 2;
+    const NON_PHYSICAL_GOODS = 3;
+    const AIRLINE_TICKETS = 4;
+    const TRAVEL_VERTICAL = 5;
+    const TELECOM_VERTICAL = 6;
+
+    const SSL_COM_PRODUCT_PROFILE = [
+        self::GENERAL => "General",
+        self::PHYSICAL_GOODS => "Physical Goods",
+        self::NON_PHYSICAL_GOODS => "Non Physical Goods",
+        self::AIRLINE_TICKETS => "Airline Tickets",
+        self::TRAVEL_VERTICAL => "Travel Vertical",
+        self::TELECOM_VERTICAL => "Telecom Vertical"
+    ];
+
+   // VALID / FAILED / CANCELLED / EXPIRED / UNATTEMPTED
+    const SSL_PAYMENT_VALID="VALID";
+    const SSL_PAYMENT_FAILED="FAILED";
+    const SSL_PAYMENT_CANCELLED="CANCELLED";
+    const SSL_PAYMENT_EXPIRED="EXPIRED";
+    const SSL_PAYMENT_UNATTEMPTED="UNATTEMPTED";
 }
