@@ -159,7 +159,7 @@ class SslCommerzPaymentGatewayService
             "currency" => $data['transaction_info']['currency'],
 
             /**  Feed Uri */
-            "success_url" =>$paymentConfig['ipn_url'], //$data['feed_uri']['success'],
+            "success_url" =>$data['feed_uri']['success'],
             "fail_url" => $data['feed_uri']['failed'],
             "cancel_url" => $data['feed_uri']['cancel'],
             "ipn_url" => $paymentConfig['ipn_url'],

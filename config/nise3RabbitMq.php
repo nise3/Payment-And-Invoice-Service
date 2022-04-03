@@ -26,7 +26,7 @@ return [
                 'autoDelete' => false
             ],
             'queue' => [
-                PaymentHelper::INSTITUTE_PAYMENT => [
+                PaymentHelper::INDUSTRY_ASSOCIATION_PAYMENT => [
                     'name' => PaymentHelper::INDUSTRY_ASSOCIATION_PAYMENT.'.q',
                     'binding' => PaymentHelper::INDUSTRY_ASSOCIATION_PAYMENT,
                     'durable' => true,

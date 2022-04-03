@@ -94,6 +94,7 @@ class PaymentService
         }else if($paymentGatewayType == PaymentHelper::GATEWAY_SSLCOMMERZ){
             app(SslCommerzPaymentGatewayService::class)->paymentLogPayloadBuilder($request->all(), $response, false);
         }
+        //TODO: Verify The Order
         $paymentLog = $this->storeDataInPaymentLog($response, true);
 
         if (!empty($paymentLog)) {
