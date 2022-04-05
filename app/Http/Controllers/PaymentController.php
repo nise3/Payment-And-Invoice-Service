@@ -59,7 +59,7 @@ class PaymentController extends Controller
     public function paymentConfig(Request $request): \Illuminate\Http\JsonResponse
     {
         $validatedData = $this->paymentService->paymentConfigValidation($request)->validate();
-        $paymentConfig = $this->paymentService->getPaymentConfigByPaymentPurpose($validatedData);
+        $paymentConfig = $this->paymentService->getPublicPaymentConfigByPaymentPurpose($validatedData);
         $responseStatusCode = ResponseAlias::HTTP_OK;
         $response['data'] = $paymentConfig;
         $response['_response_status'] = [

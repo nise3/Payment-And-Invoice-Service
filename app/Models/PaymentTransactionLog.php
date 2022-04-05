@@ -13,7 +13,7 @@ use Psy\Util\Json;
  * @property string mer_trnx_id
  * @property string trnx_id
  * @property int payment_purpose_related_id
- * @property int payment_purpose_code
+ * @property int payment_purpose
  * @property int payment_gateway_type
  * @property double amount
  * @property double paid_amount

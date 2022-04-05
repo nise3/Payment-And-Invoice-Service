@@ -10,7 +10,6 @@ use App\Models\PaymentTransactionHistory;
 use App\Models\PaymentTransactionLog;
 use App\Services\EkPay\EkPayPaymentService;
 use App\Services\SslCommerz\SslCommerzPaymentGatewayService;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -59,7 +58,7 @@ class PaymentService
 
         /** Data Store in payment Log */
         if ($paymentLog) {
-            $parts = explode('/',  $paymentBaseConfiguration['ipn_url']);
+            $parts = explode('/', $paymentBaseConfiguration['ipn_url']);
             $ipnUriSecretToken = end($parts);
             $paymentLog['invoice'] = $invoice;
             $paymentLog['payment_purpose'] = $data['payment_config']['purpose'];
@@ -86,28 +85,45 @@ class PaymentService
      */
     public function handleIpn(Request $request, string $secretToken)
     {
-        $paymentGatewayType = $this->getPaymentGateway($secretToken);
-
+        $paymentLog = $this->getPaymentGateway($secretToken);
         $response = [];
-        if ($paymentGatewayType == PaymentHelper::GATEWAY_EKPAY) {
+        if ($paymentLog->payment_gateway_type == PaymentHelper::GATEWAY_EKPAY) {
             app(EkPayPaymentService::class)->paymentLogPayloadBuilder($request->all(), $response, false);
-        }else if($paymentGatewayType == PaymentHelper::GATEWAY_SSLCOMMERZ){
-            app(SslCommerzPaymentGatewayService::class)->paymentLogPayloadBuilder($request->all(), $response, false);
-        }
-        //TODO: Verify The Order
-        $paymentLog = $this->storeDataInPaymentLog($response, true);
+        } else if ($paymentLog->payment_gateway_type == PaymentHelper::GATEWAY_SSLCOMMERZ) {
+            $orderVerification = app(SslCommerzPaymentGatewayService::class)->orderValidation($request, $this->getPaymentConfigByPaymentPurpose($paymentLog->payment_purpose));
+            if ($orderVerification) {
+                app(SslCommerzPaymentGatewayService::class)->paymentLogPayloadBuilder($request->all(), $response, false);
 
-        if (!empty($paymentLog)) {
-            $this->paymentEventFire($paymentLog);
+                $paymentLogAfterUpdating = $this->storeDataInPaymentLog($response, true);
+
+                if (!empty($paymentLogAfterUpdating)) {
+                    $this->paymentEventFire($paymentLogAfterUpdating);
+                }
+
+            } else {
+                Log::info("Invalid Ipn Payload, Payload is: " . json_encode($request->all()));
+            }
+
         }
+
+
     }
 
     /**
      * Payment Gateway config by payment purpose
-     * @param array $data
+     * @param string $purpose
      * @return array
      */
-    public function getPaymentConfigByPaymentPurpose(array $data): array
+    private function getPaymentConfigByPaymentPurpose(string $purpose): array
+    {
+        $paymentConfig = PaymentPurpose::where('code', $purpose)->firstOrFail();
+        $paymentConfigData = $paymentConfig->paymentConfigurations()->firstOrFail()->toArray();
+        $configChild = env('IS_SANDBOX', false) ? "sandbox" : "production";
+        return $paymentConfigData['configuration'][$configChild];
+
+    }
+
+    public function getPublicPaymentConfigByPaymentPurpose(array $data): array
     {
         $paymentConfig = PaymentPurpose::where('code', $data['payment_purpose'])->firstOrFail();
         $paymentConfigData = $paymentConfig->paymentConfigurations()->get();
@@ -122,6 +138,10 @@ class PaymentService
     }
 
 
+    /**
+     * @param array $data
+     * @return array
+     */
     private function getPaymentConfig(array $data): array
     {
         $paymentConfig = PaymentConfiguration::findOrFail($data['payment_config']['payment_config_id'])->toArray();
@@ -170,11 +190,11 @@ class PaymentService
     /**
      * Retrieve the payment gateway type by secretToken
      * @param string $secretKey
-     * @return string
+     * @return PaymentTransactionLog
      */
-    private function getPaymentGateway(string $secretKey): string
+    private function getPaymentGateway(string $secretKey): PaymentTransactionLog
     {
-        return PaymentTransactionLog::where("ipn_uri_secret_token", $secretKey)->firstOrfail()->payment_gateway_type;
+        return PaymentTransactionLog::where("ipn_uri_secret_token", $secretKey)->firstOrfail();
     }
 
     private function paymentEventFire(array $data)

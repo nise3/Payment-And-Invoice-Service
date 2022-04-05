@@ -2,13 +2,13 @@
 
 namespace App\Services\SslCommerz;
 
-use App\Exceptions\HttpErrorException;
 use App\Helpers\Classes\PaymentHelper;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use const Widmogrod\Functional\concat;
 
 class SslCommerzPaymentGatewayService
 {
@@ -84,7 +84,7 @@ class SslCommerzPaymentGatewayService
      */
     private function getPaymentStatus(string $msgCode): int
     {
-        if ($msgCode ==PaymentHelper::SSL_PAYMENT_VALID) {
+        if ($msgCode == PaymentHelper::SSL_PAYMENT_VALID) {
             return PaymentHelper::PAYMENT_STATUS_SUCCESS;
         } elseif ($msgCode == PaymentHelper::SSL_PAYMENT_FAILED) {
             return PaymentHelper::PAYMENT_STATUS_FAILED;
@@ -94,6 +94,73 @@ class SslCommerzPaymentGatewayService
             return PaymentHelper::PAYMENT_STATUS_PENDING;
         }
 
+    }
+
+
+    public function orderValidation(Request $request, array $paymentConfig): bool
+    {
+        if ($this->sslCommerzHashVerify($request, $paymentConfig['api_credential']['password'])) {
+            $valId = urlencode($request->offsetGet('val_id'));
+            $storeId = urlencode($paymentConfig['api_credential']['merchant_id']);
+            $storePassword = urlencode($paymentConfig['api_credential']['password']);
+            $baseUrl = env('IS_SANDBOX', false) ? config('sslcommerz.sandbox.apiDomain') : config('sslcommerz.production.apiDomain');
+
+            $requestedUrl = $baseUrl . config('sslcommerz.apiUrl.order_validate') . "?val_id=" . $valId . "&store_id=" . $storeId . "&store_passwd=" . $storePassword . "&v=1&format=json";
+
+            $handle = curl_init();
+            curl_setopt($handle, CURLOPT_URL, $requestedUrl);
+            curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($handle, CURLOPT_SSL_VERIFYHOST, $this->isVerify()); # IF YOU RUN FROM LOCAL PC
+            curl_setopt($handle, CURLOPT_SSL_VERIFYPEER, $this->isVerify()); # IF YOU RUN FROM LOCAL PC
+
+            $result = curl_exec($handle);
+            Log::info("Order Validation Info:" . json_encode($result));
+
+            $code = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+            $result = json_decode($result, true);
+            if ($code == 200 && !(curl_errno($handle)) && $result['status'] == (PaymentHelper::SSL_PAYMENT_VALID || PaymentHelper::SSL_PAYMENT_VALIDATED)) {
+                return true;
+            }
+
+        } else {
+            Log::info("Unable to ssl commerz hash verify");
+        }
+        return false;
+
+    }
+
+    /**
+     * @param Request $request
+     * @param string $storePassword
+     * @return bool
+     */
+    private function sslCommerzHashVerify(Request $request, string $storePassword = ""): bool
+    {
+        if (!empty($request->offsetGet('verify_sign')) && !empty($request->offsetGet('verify_key'))) {
+            $preDefineKey = explode(',', $request->offsetGet('verify_key'));
+            $newData = array();
+            if (!empty($preDefineKey)) {
+                foreach ($preDefineKey as $value) {
+                    if ($request->has($value)) {
+                        $newData[$value] = $request->offsetGet($value);
+                    }
+                }
+            }
+            # ADD MD5 OF STORE PASSWORD
+            $newData['store_passwd'] = md5($storePassword);
+            # SORT THE KEY AS BEFORE
+            ksort($newData);
+            $hashString = "";
+            foreach ($newData as $key => $value) {
+                $hashString .= $key . '=' . ($value) . '&';
+            }
+            $hashString = rtrim($hashString, '&');
+            if (md5($hashString) == $request->offsetGet('verify_sign')) {
+                return true;
+            } else {
+                return false;
+            }
+        } else return false;
     }
 
 
@@ -159,7 +226,7 @@ class SslCommerzPaymentGatewayService
             "currency" => $data['transaction_info']['currency'],
 
             /**  Feed Uri */
-            "success_url" =>$data['feed_uri']['success'],
+            "success_url" => $paymentConfig['ipn_url'],//$data['feed_uri']['success'],
             "fail_url" => $data['feed_uri']['failed'],
             "cancel_url" => $data['feed_uri']['cancel'],
             "ipn_url" => $paymentConfig['ipn_url'],
@@ -182,6 +249,6 @@ class SslCommerzPaymentGatewayService
 
     private function isVerify(): bool
     {
-        return request()->getHost() != "localhost" || request()->getHost() != "127.0.0.1";
+        return request()->getHost() != ("localhost" || "127.0.0.1");
     }
 }
