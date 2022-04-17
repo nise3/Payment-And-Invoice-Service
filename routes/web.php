@@ -21,8 +21,10 @@ $router->group(['prefix' => 'api/v1', 'as' => 'api.v1'], function () use ($route
 
     /** Public Apis */
     $router->group(['prefix' => 'public', 'as' => 'public'], function () use ($router) {
-        $router->post("pay-now", ["as" => "pay-now", "uses" => "PaymentController@payNow"]);
         $router->post("ipn/{secretKey}", ["as" => "ipn", "uses" => "PaymentController@ipn"]);
+
+        /** Testing */
+        $router->post("pay-now", ["as" => "pay-now", "uses" => "PaymentController@payNow"]);
         $router->post("success", ["as" => "success", "uses" => "PaymentController@success"]);
     });
 

@@ -22,12 +22,12 @@
         }
     ],
     "paths": {
-        "/course-enrollment/payment-by-ek-pay/ipn-handler/{secretToken}": {
+        "/public/ipn/{secretKey}": {
             "post": {
                 "summary": "Endpoint to Receive Payment Acknowledgement from EkPage Payment Gateway",
                 "parameters": [
                     {
-                        "name": "secretToken",
+                        "name": "secretKey",
                         "in": "path",
                         "required": true,
                         "style": "simple",
