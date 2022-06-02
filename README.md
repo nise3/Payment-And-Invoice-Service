@@ -1,4 +1,4 @@
-# NISE3 Payment & Invoice API Service
+# NISE Payment & Invoice API Service
 
 ## Following 3 branches are protected and among them develop branch is the default branch:
 ```shell
